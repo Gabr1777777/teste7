@@ -1,5 +1,14 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faby - Profile</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css"> 
+</head>
 <body>
-    
+
     <div id="loading-screen">
         <div class="loader-content">
             <h1 class="loader-title">Faby</h1>
@@ -16,13 +25,18 @@
             <div class="music-info" style="text-align:center;">
                 <span id="music-title" style="color:var(--gold-main); font-size:0.6rem;">Paulo Londra - Adan y Eva</span>
             </div>
-            <audio id="audio-player" src="audio/Paulo Londra - Adan y Eva.mp3" loop=""></audio>
+            <audio id="audio-player" src="audio/Paulo Londra - Adan y Eva.mp3" loop></audio>
+            
             <div class="player-controls">
-                <button id="prev-song" class="control-btn" style="background:none; border:none; color:#777;"><i class="ph-fill ph-skip-back"></i></button>
+                <button id="prev-song" class="control-btn" style="background:none; border:none; color:#777;">
+                    <i class="ph-fill ph-skip-back"></i>
+                </button>
                 <button id="play-pause-button" class="play-btn">
                     <i id="play-icon" class="ph-fill ph-play"></i>
                 </button>
-                <button id="next-song" class="control-btn" style="background:none; border:none; color:#777;"><i class="ph-fill ph-skip-forward"></i></button>
+                <button id="next-song" class="control-btn" style="background:none; border:none; color:#777;">
+                    <i class="ph-fill ph-skip-forward"></i>
+                </button>
             </div>
             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" style="width:100%; accent-color:var(--gold-main); height:2px;">
         </div>
@@ -31,7 +45,6 @@
     <div class="sparkles-container"></div>
 
     <div class="container"> 
-        
         <header class="glam-header reveal-wait">
             <h1 class="glam-title">Faby</h1>
             <p class="glam-subtitle">46197719</p>
@@ -46,7 +59,6 @@
         </nav>
 
         <div id="content-area">
-
             <div id="home-section" class="content-section">
                 <section class="bio-card reveal-wait">
                     <div class="avatar-border">
@@ -76,7 +88,7 @@
             <div id="profile-section" class="content-section hidden">
                 <section class="chic-panel">
                     <ul class="glam-list" style="list-style:none; padding:0;">
-                        <li> <span>"Tenemos tantas cosas y tantas oportunidades que ya ni siquiera sabemos que nos importa."</span></li>
+                        <li><span>"Tenemos tantas cosas y tantas oportunidades que ya ni siquiera sabemos que nos importa."</span></li>
                     </ul>
                 </section>
             </div>
@@ -96,13 +108,13 @@
                     </div>
                 </section>
             </div>
-            
         </div>
+
         <footer class="footer">
             <p>DESIGNED BY <a href="https://xat.me/Rayko">RAYKO</a> © 2025</p>
         </footer>
     </div>
+
     <script src="script.js"></script>
-
-
-<div class="region-selector-container" style="position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; z-index: 2147483645; display: none;"></div></body>
+</body>
+</html>
