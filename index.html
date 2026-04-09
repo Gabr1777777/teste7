@@ -25,7 +25,6 @@
             overflow-x: hidden;
         }
 
-        /* Loading Screen */
         #loading-screen {
             position: fixed;
             inset: 0;
@@ -48,7 +47,6 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Layout Container */
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -60,7 +58,6 @@
         .glam-title { font-size: 3rem; color: var(--gold-main); text-transform: uppercase; letter-spacing: 5px; }
         .glam-subtitle { color: #666; font-size: 0.9rem; }
 
-        /* Navbar */
         .navbar ul {
             display: flex;
             justify-content: center;
@@ -79,13 +76,11 @@
 
         .navbar a.active, .navbar a:hover { color: var(--gold-main); border-bottom: 1px solid var(--gold-main); }
 
-        /* Sections */
         .content-section { animation: fadeIn 0.5s ease forwards; }
         .hidden { display: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Avatar */
         .avatar-border {
             width: 150px;
             height: 150px;
@@ -97,7 +92,6 @@
 
         .main-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        /* Friends Grid */
         .friends-grid-chic {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -109,7 +103,6 @@
         .friend-gem img { width: 60px; height: 60px; border-radius: 15px; border: 1px solid #333; display: block; margin: 0 auto 5px; }
         .friend-gem:hover img { border-color: var(--gold-main); transform: scale(1.05); }
 
-        /* Player Flutuante */
         .floating-toggle {
             position: fixed;
             bottom: 20px;
@@ -141,7 +134,6 @@
         .player-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 10px 0; }
         .play-btn { background: var(--gold-main); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
 
-        /* Carousel */
         .glam-carousel { position: relative; width: 100%; max-width: 300px; margin: 20px auto; }
         .carousel-track img { width: 100%; display: none; border-radius: 10px; border: 1px solid var(--gold-main); }
         .carousel-track img.active { display: block; }
@@ -169,13 +161,13 @@
     <div id="floating-music-player" class="music-player hidden-player">
         <div class="player-content">
             <div class="music-info">
-                <p id="music-title" style="color:var(--gold-main); font-size:0.7rem; margin-bottom:5px;">Adan y Eva - Paulo Londra</p>
+                <p id="music-title" style="color:var(--gold-main); font-size:0.7rem; margin-bottom:5px;">Carregando...</p>
             </div>
-            <audio id="audio-player" src="audio/Paulo Londra - Adan y Eva.mp3" loop></audio>
+            <audio id="audio-player" src="" loop></audio>
             <div class="player-controls">
-                <button id="prev-song" style="background:none; border:none; color:#777;"><i class="ph-fill ph-skip-back"></i></button>
+                <button id="prev-song" style="background:none; border:none; color:#777; cursor:pointer;"><i class="ph-fill ph-skip-back"></i></button>
                 <button id="play-pause-button" class="play-btn"><i id="play-icon" class="ph-fill ph-play"></i></button>
-                <button id="next-song" style="background:none; border:none; color:#777;"><i class="ph-fill ph-skip-forward"></i></button>
+                <button id="next-song" style="background:none; border:none; color:#777; cursor:pointer;"><i class="ph-fill ph-skip-forward"></i></button>
             </div>
             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" style="width:100%; accent-color:var(--gold-main);">
         </div>
@@ -242,6 +234,26 @@
     </div>
 
     <script>
+        // Playlist Data
+        const playlist = [
+            { name: "Eminem - You dont know", url: "https://www.dropbox.com/scl/fi/4y0lc0fi24e9yavn17psv/Eminem-you-dont-know.mp3.mp3?rlkey=zicb6spgqe3pv0gqnz3xc24zo&st=wy1w0icm&raw=1" },
+            { name: "The Sound of Silence – Rising to the Night", url: "https://www.dropbox.com/scl/fi/2y9zhx5zjsdxg3zljc2f9/sound-of-silence.mp3.mp3?rlkey=88zg0td3loy40uxmcm9rnk1jt&st=qty8093e&raw=1" },
+            { name: "Desireless - Voyage Voyage", url: "https://www.dropbox.com/scl/fi/2y9zhx5zjsdxg3zljc2f9/sound-of-silence.mp3.mp3?rlkey=88zg0td3loy40uxmcm9rnk1jt&st=0yenl8sh&raw=1" }
+        ];
+
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('audio-player');
+        const musicTitle = document.getElementById('music-title');
+        const playIcon = document.getElementById('play-icon');
+
+        function loadTrack(index) {
+            currentTrackIndex = index;
+            audio.src = playlist[index].url;
+            musicTitle.innerText = playlist[index].name;
+        }
+
+        loadTrack(0);
+
         // Loading Screen
         window.addEventListener('load', () => {
             const loader = document.getElementById('loading-screen');
@@ -269,10 +281,7 @@
         toggleBtn.addEventListener('click', () => player.classList.toggle('hidden-player'));
 
         // Play/Pause Logic
-        const audio = document.getElementById('audio-player');
         const playPauseBtn = document.getElementById('play-pause-button');
-        const playIcon = document.getElementById('play-icon');
-
         playPauseBtn.addEventListener('click', () => {
             if (audio.paused) {
                 audio.play();
@@ -281,6 +290,21 @@
                 audio.pause();
                 playIcon.classList.replace('ph-pause', 'ph-play');
             }
+        });
+
+        // Next/Prev Tracks
+        document.getElementById('next-song').addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playIcon.classList.replace('ph-play', 'ph-pause');
+        });
+
+        document.getElementById('prev-song').addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playIcon.classList.replace('ph-play', 'ph-pause');
         });
 
         // Volume
