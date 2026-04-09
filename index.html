@@ -436,5 +436,76 @@
         document.querySelector('.next-arrow').addEventListener('click', () => { images[currentImg].classList.remove('active'); currentImg = (currentImg + 1) % images.length; images[currentImg].classList.add('active'); });
         document.querySelector('.prev-arrow').addEventListener('click', () => { images[currentImg].classList.remove('active'); currentImg = (currentImg - 1 + images.length) % images.length; images[currentImg].classList.add('active'); });
     </script>
+<style>
+    /* Estilo do Alerta de Copyright */
+    #copyright-alert {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #000;
+        color: #d4af37; /* Amarelo Dourado */
+        padding: 20px 40px;
+        border: 2px solid #d4af37;
+        border-radius: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        z-index: 20000;
+        display: none;
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        text-align: center;
+        pointer-events: none;
+    }
+
+    /* Impede a seleção de texto em todo o site */
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+</style>
+
+<div id="copyright-alert">Copyright - Acesso Proibido</div>
+
+<script>
+    const alertBox = document.getElementById('copyright-alert');
+
+    function showAlert() {
+        alertBox.style.display = 'block';
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 2000);
+    }
+
+    // Bloquear Clique Direito
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        showAlert();
+    });
+
+    // Bloquear Teclas de Atalho (Ctrl+U, F12, Ctrl+Shift+I, Ctrl+S)
+    document.addEventListener('keydown', (e) => {
+        if (
+            e.keyCode === 123 || // F12
+            (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+            (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
+            (e.ctrlKey && e.keyCode === 83)    // Ctrl+S
+        ) {
+            e.preventDefault();
+            showAlert();
+            return false;
+        }
+    });
+
+    // Bloquear Arrastar Imagens
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.nodeName === 'IMG') {
+            e.preventDefault();
+        }
+    });
+</script>
 </body>
 </html>
