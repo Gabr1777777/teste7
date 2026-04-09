@@ -3,54 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faby - Profile</title>
+    <title>Faby Profile</title>
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold-main: #d4af37;
+            --gold-soft: #f1e5ac;
+            --bg-dark: #0a0a0a;
+            --panel-bg: rgba(20, 20, 20, 0.9);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .chic-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--gold-main);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Layout Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .glam-header { margin-bottom: 30px; }
+        .glam-title { font-size: 3rem; color: var(--gold-main); text-transform: uppercase; letter-spacing: 5px; }
+        .glam-subtitle { color: #666; font-size: 0.9rem; }
+
+        /* Navbar */
+        .navbar ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #888;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .navbar a.active, .navbar a:hover { color: var(--gold-main); border-bottom: 1px solid var(--gold-main); }
+
+        /* Sections */
+        .content-section { animation: fadeIn 0.5s ease forwards; }
+        .hidden { display: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Avatar */
+        .avatar-border {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border: 2px solid var(--gold-main);
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .main-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        /* Friends Grid */
+        .friends-grid-chic {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .friend-gem { text-decoration: none; color: white; font-size: 0.7rem; transition: 0.3s; }
+        .friend-gem img { width: 60px; height: 60px; border-radius: 15px; border: 1px solid #333; display: block; margin: 0 auto 5px; }
+        .friend-gem:hover img { border-color: var(--gold-main); transform: scale(1.05); }
+
+        /* Player Flutuante */
+        .floating-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--gold-main);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .music-player {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: var(--panel-bg);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--gold-main);
+            width: 220px;
+            transition: 0.4s;
+            z-index: 1000;
+        }
+
+        .hidden-player { opacity: 0; pointer-events: none; transform: translateY(20px); }
+
+        .player-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 10px 0; }
+        .play-btn { background: var(--gold-main); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
+
+        /* Carousel */
+        .glam-carousel { position: relative; width: 100%; max-width: 300px; margin: 20px auto; }
+        .carousel-track img { width: 100%; display: none; border-radius: 10px; border: 1px solid var(--gold-main); }
+        .carousel-track img.active { display: block; }
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; color: white; cursor: pointer; font-size: 1.5rem; }
+        .prev-arrow { left: -30px; }
+        .next-arrow { right: -30px; }
+        
+        .footer { margin-top: 50px; font-size: 0.7rem; color: #444; letter-spacing: 2px; }
+        .footer a { color: var(--gold-main); text-decoration: none; }
+    </style>
 </head>
 <body>
 
     <div id="loading-screen">
         <div class="loader-content">
-            <h1 class="loader-title">Faby</h1>
+            <h1 class="loader-title" style="color:var(--gold-main)">Faby</h1>
             <div class="chic-spinner"></div>
         </div>
     </div>
 
-    <button id="toggle-player-btn" class="floating-toggle" aria-label="Música">
+    <button id="toggle-player-btn" class="floating-toggle">
         <i class="ph-fill ph-music-note"></i>
     </button>
     
     <div id="floating-music-player" class="music-player hidden-player">
         <div class="player-content">
-            <div class="music-info" style="text-align:center;">
-                <span id="music-title" style="color:var(--gold-main); font-size:0.6rem;">Paulo Londra - Adan y Eva</span>
+            <div class="music-info">
+                <p id="music-title" style="color:var(--gold-main); font-size:0.7rem; margin-bottom:5px;">Adan y Eva - Paulo Londra</p>
             </div>
             <audio id="audio-player" src="audio/Paulo Londra - Adan y Eva.mp3" loop></audio>
-            
             <div class="player-controls">
-                <button id="prev-song" class="control-btn" style="background:none; border:none; color:#777;">
-                    <i class="ph-fill ph-skip-back"></i>
-                </button>
-                <button id="play-pause-button" class="play-btn">
-                    <i id="play-icon" class="ph-fill ph-play"></i>
-                </button>
-                <button id="next-song" class="control-btn" style="background:none; border:none; color:#777;">
-                    <i class="ph-fill ph-skip-forward"></i>
-                </button>
+                <button id="prev-song" style="background:none; border:none; color:#777;"><i class="ph-fill ph-skip-back"></i></button>
+                <button id="play-pause-button" class="play-btn"><i id="play-icon" class="ph-fill ph-play"></i></button>
+                <button id="next-song" style="background:none; border:none; color:#777;"><i class="ph-fill ph-skip-forward"></i></button>
             </div>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" style="width:100%; accent-color:var(--gold-main); height:2px;">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" style="width:100%; accent-color:var(--gold-main);">
         </div>
     </div>
 
-    <div class="sparkles-container"></div>
-
     <div class="container"> 
-        <header class="glam-header reveal-wait">
+        <header class="glam-header">
             <h1 class="glam-title">Faby</h1>
             <p class="glam-subtitle">46197719</p>
         </header>
 
-        <nav class="navbar reveal-wait">
+        <nav class="navbar">
             <ul>
                 <li><a href="#" data-target="home-section" class="active">Inicio</a></li>
                 <li><a href="#" data-target="profile-section">Perfil</a></li>
@@ -60,16 +197,12 @@
 
         <div id="content-area">
             <div id="home-section" class="content-section">
-                <section class="bio-card reveal-wait">
-                    <div class="avatar-border">
-                        <img src="https://xatimg.com/image/oOJGV6l4ls6p.jpg" alt="Fabi Avatar" class="main-avatar">
-                    </div>
-                </section>
-
-                <div class="divider-gold reveal-wait"><span>✦</span></div>
-
+                <div class="avatar-border">
+                    <img src="https://xatimg.com/image/oOJGV6l4ls6p.jpg" alt="Avatar" class="main-avatar">
+                </div>
+                <div style="color:var(--gold-main); margin: 20px 0;">✦ ✦ ✦</div>
                 <section class="friends-showcase">
-                    <h2 class="section-title reveal-wait">Mis Amigos</h2>
+                    <h2 style="font-size: 1rem; text-transform: uppercase; color: #888;">Mis Amigos</h2>
                     <div class="friends-grid-chic">
                         <a href="https://xat.me/Jhon" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/MjeWd1SYnYh9.png"><span>Jhon</span></a>
                         <a href="https://xat.me/iLushoooooo1" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/1KdIw2uNwv1b.png"><span>Lusho</span></a>
@@ -79,34 +212,27 @@
                         <a href="https://xat.me/heis" target="_blank" class="friend-gem"><img src="https://i.imgur.com/rpKmWK2.png"><span>Heis</span></a>
                         <a href="https://xat.me/Majito2395" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/TO4iAUl9bmnp.png"><span>Majito</span></a>
                         <a href="https://xat.me/Gaby" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/kE0XqQ4WiVSH.png"><span>Gaby</span></a>
-                        <a href="https://xat.me/bardock2012" target="_blank" class="friend-gem"><img src="https://media3.giphy.com/media/v1.Y2lkPTUwZDk0NGRkNTRscW4xNmdnNGFzMmdpY25qZDVpbGNzdG5ta2Q2cG90YWtnYWlscSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/HKfj7dT9wW0YX83FEA/100w.gif"><span>Shelby</span></a>
-                        <a href="https://xat.me/Marv" target="_blank" class="friend-gem"><img src="https://i.ibb.co/5xtkQkTq/rappimrv.png"><span>Marvin</span></a>
                     </div>
                 </section>
             </div>
 
             <div id="profile-section" class="content-section hidden">
-                <section class="chic-panel">
-                    <ul class="glam-list" style="list-style:none; padding:0;">
-                        <li><span>"Tenemos tantas cosas y tantas oportunidades que ya ni siquiera sabemos que nos importa."</span></li>
-                    </ul>
-                </section>
+                <p style="font-style: italic; color: #ccc; padding: 20px;">
+                    "Tenemos tantas cosas y tantas oportunidades que ya ni siquiera sabemos que nos importa."
+                </p>
             </div>
 
             <div id="gallery-section" class="content-section hidden">
-                <section class="chic-panel" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-                    <h2 class="section-title" style="color:var(--gold-main); margin-bottom:10px;">Galería</h2>
-                    <div class="glam-carousel">
-                        <div class="carousel-track">
-                            <img src="https://xatimg.com/image/tKhOWquLIWnV.jpg" class="active">
-                            <img src="https://xatimg.com/image/l1lKQBudgQyM.jpg">
-                            <img src="https://xatimg.com/image/khkKIGuWO5Mc.jpg">
-                            <img src="https://xatimg.com/image/B08y5KxSLntC.jpg">
-                        </div>
-                        <button class="nav-arrow prev-arrow">❮</button>
-                        <button class="nav-arrow next-arrow">❯</button>
+                <div class="glam-carousel">
+                    <div class="carousel-track">
+                        <img src="https://xatimg.com/image/tKhOWquLIWnV.jpg" class="active">
+                        <img src="https://xatimg.com/image/l1lKQBudgQyM.jpg">
+                        <img src="https://xatimg.com/image/khkKIGuWO5Mc.jpg">
+                        <img src="https://xatimg.com/image/B08y5KxSLntC.jpg">
                     </div>
-                </section>
+                    <button class="nav-arrow prev-arrow">❮</button>
+                    <button class="nav-arrow next-arrow">❯</button>
+                </div>
             </div>
         </div>
 
@@ -115,6 +241,68 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Loading Screen
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loading-screen');
+            setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }, 1000);
+        });
+
+        // Navigation
+        const links = document.querySelectorAll('.navbar a');
+        const sections = document.querySelectorAll('.content-section');
+
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.getAttribute('data-target');
+                links.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                sections.forEach(s => s.classList.add('hidden'));
+                document.getElementById(target).classList.remove('hidden');
+            });
+        });
+
+        // Music Player Toggle
+        const player = document.getElementById('floating-music-player');
+        const toggleBtn = document.getElementById('toggle-player-btn');
+        toggleBtn.addEventListener('click', () => player.classList.toggle('hidden-player'));
+
+        // Play/Pause Logic
+        const audio = document.getElementById('audio-player');
+        const playPauseBtn = document.getElementById('play-pause-button');
+        const playIcon = document.getElementById('play-icon');
+
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playIcon.classList.replace('ph-play', 'ph-pause');
+            } else {
+                audio.pause();
+                playIcon.classList.replace('ph-pause', 'ph-play');
+            }
+        });
+
+        // Volume
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+        });
+
+        // Carousel Logic
+        const images = document.querySelectorAll('.carousel-track img');
+        let currentImg = 0;
+
+        document.querySelector('.next-arrow').addEventListener('click', () => {
+            images[currentImg].classList.remove('active');
+            currentImg = (currentImg + 1) % images.length;
+            images[currentImg].classList.add('active');
+        });
+
+        document.querySelector('.prev-arrow').addEventListener('click', () => {
+            images[currentImg].classList.remove('active');
+            currentImg = (currentImg - 1 + images.length) % images.length;
+            images[currentImg].classList.add('active');
+        });
+    </script>
 </body>
 </html>
