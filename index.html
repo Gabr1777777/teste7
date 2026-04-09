@@ -147,15 +147,15 @@
             margin-bottom: 30px;
         }
 
-        .navbar a {
-            text-decoration: none;
+        .navbar span {
+            cursor: pointer;
             color: #888;
             font-size: 0.9rem;
             transition: 0.3s;
             text-transform: uppercase;
         }
 
-        .navbar a.active, .navbar a:hover { color: var(--gold-main); border-bottom: 1px solid var(--gold-main); }
+        .navbar span.active, .navbar span:hover { color: var(--gold-main); border-bottom: 1px solid var(--gold-main); }
 
         .content-section { animation: fadeIn 0.5s ease forwards; }
         .hidden { display: none; }
@@ -180,7 +180,7 @@
             margin-top: 20px;
         }
 
-        .friend-gem { text-decoration: none; color: white; font-size: 0.7rem; transition: 0.3s; }
+        .friend-gem { cursor: pointer; color: white; font-size: 0.7rem; transition: 0.3s; }
         .friend-gem img { width: 60px; height: 60px; border-radius: 15px; border: 1px solid #333; display: block; margin: 0 auto 5px; }
         .friend-gem:hover img { border-color: var(--gold-main); transform: scale(1.05); }
 
@@ -223,7 +223,7 @@
         .next-arrow { right: -30px; }
         
         .footer { margin-top: 50px; font-size: 0.7rem; color: #444; letter-spacing: 2px; }
-        .footer a { color: var(--gold-main); text-decoration: none; }
+        .footer span { color: var(--gold-main); cursor: pointer; }
 
         /* Estilo do Alerta de Copyright */
         #copyright-alert {
@@ -290,9 +290,9 @@
 
             <nav class="navbar">
                 <ul>
-                    <li><a href="#" data-target="home-section" class="active">Inicio</a></li>
-                    <li><a href="#" data-target="profile-section">Perfil</a></li>
-                    <li><a href="#" data-target="gallery-section">Galeria</a></li>
+                    <li><span data-target="home-section" class="active">Inicio</span></li>
+                    <li><span data-target="profile-section">Perfil</span></li>
+                    <li><span data-target="gallery-section">Galeria</span></li>
                 </ul>
             </nav>
 
@@ -305,14 +305,14 @@
                     <section class="friends-showcase">
                         <h2 style="font-size: 1rem; text-transform: uppercase; color: #888;">Meus Amigos</h2>
                         <div class="friends-grid-chic">
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>   
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
-                            <a href="https://xat.me/Name" target="_blank" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></a>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>   
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
+                            <div onclick="window.open('https://xat.me/Name', '_blank')" class="friend-gem"><img src="https://xatimg.com/image/tVtLRPbin8HI.jpg"><span>Name</span></div>
                         </div>
                     </section>
                 </div>
@@ -338,7 +338,7 @@
             </div>
 
             <footer class="footer">
-                <p>DESIGNED BY <a href="https://xat.me/Gabr">Gabr</a> © 2026</p>
+                <p>DESIGNED BY <span onclick="window.open('https://xat.me/Gabr', '_blank')">Gabr</span> © 2026</p>
             </footer>
         </div>
     </div>
@@ -436,10 +436,9 @@
         });
 
         // NAVEGAÇÃO
-        const links = document.querySelectorAll('.navbar a');
+        const links = document.querySelectorAll('.navbar span');
         links.forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
                 links.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
                 document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
