@@ -26,16 +26,20 @@
             overflow-x: hidden;
             height: 100vh;
             width: 100vw;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
-        /* CANVAS DE CORAÇÕES (FIXO PARA APARECER EM AMBAS AS TELAS) */
+        /* CANVAS DE CORAÇÕES */
         #heart-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Atrás do conteúdo, à frente do fundo preto */
+            z-index: 1;
             pointer-events: none;
         }
 
@@ -51,7 +55,6 @@
             align-items: center;
         }
 
-        /* BOTÃO CENTRALIZADO E REDONDO */
         .enter-btn {
             background: rgba(0, 0, 0, 0.7);
             border: 2px solid var(--gold-main);
@@ -115,7 +118,7 @@
             opacity: 0; 
             transition: opacity 1s ease; 
             visibility: hidden;
-            z-index: 10; /* À frente dos corações */
+            z-index: 10;
             height: 100%;
             overflow-y: auto;
         }
@@ -221,6 +224,28 @@
         
         .footer { margin-top: 50px; font-size: 0.7rem; color: #444; letter-spacing: 2px; }
         .footer a { color: var(--gold-main); text-decoration: none; }
+
+        /* Estilo do Alerta de Copyright */
+        #copyright-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #000;
+            color: #d4af37;
+            padding: 20px 40px;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 20000;
+            display: none;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            text-align: center;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +260,8 @@
         <button id="enter-btn" class="enter-btn">Name</button>
     </div>
 
+    <div id="copyright-alert">Copyright - Acesso Proibido</div>
+
     <div id="main-content" class="main-content">
         <button id="toggle-player-btn" class="floating-toggle">
             <i class="ph-fill ph-music-note"></i>
@@ -245,7 +272,7 @@
                 <div class="music-info">
                     <p id="music-title" style="color:var(--gold-main); font-size:0.7rem; margin-bottom:5px;">Carregando...</p>
                 </div>
-                <audio id="audio-player" src="" loop></audio>
+                <audio id="audio-player" src="" loop="false"></audio>
                 <div class="player-controls">
                     <button id="prev-song" style="background:none; border:none; color:#777; cursor:pointer;"><i class="ph-fill ph-skip-back"></i></button>
                     <button id="play-pause-button" class="play-btn"><i id="play-icon" class="ph-fill ph-play"></i></button>
@@ -336,7 +363,7 @@
 
         loadTrack(0);
 
-        // LÓGICA DO CANVAS (Sempre ativa)
+        // LÓGICA DO CANVAS
         const canvas = document.getElementById('heart-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -420,14 +447,32 @@
             });
         });
 
-        // PLAYER
+        // PLAYER LOGIC
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playIcon.classList.replace('ph-play', 'ph-pause');
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playIcon.classList.replace('ph-play', 'ph-pause');
+        }
+
+        audio.onended = function() { nextTrack(); };
+
         document.getElementById('toggle-player-btn').addEventListener('click', () => document.getElementById('floating-music-player').classList.toggle('hidden-player'));
+        
         document.getElementById('play-pause-button').addEventListener('click', () => {
             if (audio.paused) { audio.play(); playIcon.classList.replace('ph-play', 'ph-pause'); }
             else { audio.pause(); playIcon.classList.replace('ph-pause', 'ph-play'); }
         });
-        document.getElementById('next-song').addEventListener('click', () => { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); audio.play(); playIcon.classList.replace('ph-play', 'ph-pause'); });
-        document.getElementById('prev-song').addEventListener('click', () => { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); audio.play(); playIcon.classList.replace('ph-play', 'ph-pause'); });
+
+        document.getElementById('next-song').addEventListener('click', nextTrack);
+        document.getElementById('prev-song').addEventListener('click', prevTrack);
         document.getElementById('volume-slider').addEventListener('input', (e) => audio.volume = e.target.value);
 
         // CARROSSEL
@@ -435,77 +480,33 @@
         let currentImg = 0;
         document.querySelector('.next-arrow').addEventListener('click', () => { images[currentImg].classList.remove('active'); currentImg = (currentImg + 1) % images.length; images[currentImg].classList.add('active'); });
         document.querySelector('.prev-arrow').addEventListener('click', () => { images[currentImg].classList.remove('active'); currentImg = (currentImg - 1 + images.length) % images.length; images[currentImg].classList.add('active'); });
+
+        // PROTEÇÃO COPYRIGHT
+        const alertBox = document.getElementById('copyright-alert');
+
+        function showAlert() {
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 2000);
+        }
+
+        document.addEventListener('contextmenu', (e) => { e.preventDefault(); showAlert(); });
+
+        document.addEventListener('keydown', (e) => {
+            if (
+                e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
+                (e.ctrlKey && e.keyCode === 85) || 
+                (e.ctrlKey && e.keyCode === 83)
+            ) {
+                e.preventDefault();
+                showAlert();
+                return false;
+            }
+        });
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.nodeName === 'IMG') e.preventDefault();
+        });
     </script>
-<style>
-    /* Estilo do Alerta de Copyright */
-    #copyright-alert {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #000;
-        color: #d4af37; /* Amarelo Dourado */
-        padding: 20px 40px;
-        border: 2px solid #d4af37;
-        border-radius: 10px;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        z-index: 20000;
-        display: none;
-        box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-        text-align: center;
-        pointer-events: none;
-    }
-
-    /* Impede a seleção de texto em todo o site */
-    body {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-</style>
-
-<div id="copyright-alert">Copyright - Acesso Proibido</div>
-
-<script>
-    const alertBox = document.getElementById('copyright-alert');
-
-    function showAlert() {
-        alertBox.style.display = 'block';
-        setTimeout(() => {
-            alertBox.style.display = 'none';
-        }, 2000);
-    }
-
-    // Bloquear Clique Direito
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        showAlert();
-    });
-
-    // Bloquear Teclas de Atalho (Ctrl+U, F12, Ctrl+Shift+I, Ctrl+S)
-    document.addEventListener('keydown', (e) => {
-        if (
-            e.keyCode === 123 || // F12
-            (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-            (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
-            (e.ctrlKey && e.keyCode === 83)    // Ctrl+S
-        ) {
-            e.preventDefault();
-            showAlert();
-            return false;
-        }
-    });
-
-    // Bloquear Arrastar Imagens
-    document.addEventListener('dragstart', (e) => {
-        if (e.target.nodeName === 'IMG') {
-            e.preventDefault();
-        }
-    });
-</script>
 </body>
 </html>
