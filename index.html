@@ -14,6 +14,7 @@
             --gold-soft: #f1e5ac;
             --bg-dark: #0a0a0a;
             --panel-bg: rgba(20, 20, 20, 0.9);
+            --heart-color: #ffeb3b; /* Amarelo brilhante para os corações */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,42 +24,65 @@
             color: white;
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
+            height: 100vh;
+            width: 100vw;
         }
 
-        /* TELA DE ENTRADA (INTRO) */
+        /* TELA DE ENTRADA (MODIFICADA PARA BOTÃO FLUTUANTE) */
         #intro-screen {
             position: fixed;
             inset: 0;
-            background: black;
-            display: flex;
-            flex-direction: column;
+            background: black; /* Fundo preto sólido */
+            z-index: 10000;
+            transition: opacity 0.8s ease, visibility 0.8s;
+            display: flex; /* Mantém flex para centralizar o canvas se necessário */
             justify-content: center;
             align-items: center;
-            z-index: 10000;
-            transition: opacity 0.8s ease;
         }
 
+        /* Novo estilo do botão: Flutuante e Redondo */
         .enter-btn {
-            background: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.7);
             border: 2px solid var(--gold-main);
             color: var(--gold-main);
-            padding: 15px 40px;
-            font-size: 2rem;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%; /* Redondo */
+            font-size: 1.2rem;
             font-family: 'Poppins', sans-serif;
             text-transform: uppercase;
-            letter-spacing: 5px;
+            letter-spacing: 2px;
             cursor: pointer;
             transition: 0.4s;
-            border-radius: 5px;
+            z-index: 10002; /* Acima da chuva de corações */
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .enter-btn:hover {
             background: var(--gold-main);
             color: black;
-            box-shadow: 0 0 20px var(--gold-main);
+            box-shadow: 0 0 25px var(--gold-main);
+            transform: scale(1.1);
         }
 
-        /* LOADING */
+        /* Canvas para a chuva de corações */
+        #heart-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10001; /* Entre o fundo preto e o botão */
+            pointer-events: none; /* Não atrapalha o clique no botão */
+        }
+
+        /* LOADING INICIAL */
         #loading-screen {
             position: fixed;
             inset: 0;
@@ -83,7 +107,18 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* CONTEÚDO PRINCIPAL (ESCONDIDO ATÉ O CLICK) */
-        .main-content { opacity: 0; transition: opacity 1s ease; }
+        .main-content { 
+            opacity: 0; 
+            transition: opacity 1s ease; 
+            visibility: hidden; /* Garante que não seja clicável antes */
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+            visibility: visible;
+        }
 
         .container {
             max-width: 600px;
@@ -141,6 +176,7 @@
         .friend-gem img { width: 60px; height: 60px; border-radius: 15px; border: 1px solid #333; display: block; margin: 0 auto 5px; }
         .friend-gem:hover img { border-color: var(--gold-main); transform: scale(1.05); }
 
+        /* Botão flutuante do player de música (mantido) */
         .floating-toggle {
             position: fixed;
             bottom: 20px;
@@ -190,6 +226,7 @@
     </div>
 
     <div id="intro-screen">
+        <canvas id="heart-canvas"></canvas>
         <button id="enter-btn" class="enter-btn">Faby</button>
     </div>
 
@@ -275,7 +312,7 @@
     </div>
 
     <script>
-        // Playlist Data
+        // Playlist Data (Mantida intacta)
         const playlist = [
             { name: "Eminem - You dont know", url: "https://www.dropbox.com/scl/fi/4y0lc0fi24e9yavn17psv/Eminem-you-dont-know.mp3.mp3?rlkey=zicb6spgqe3pv0gqnz3xc24zo&st=wy1w0icm&raw=1" },
             { name: "The Sound of Silence – Rising to the Night", url: "https://www.dropbox.com/scl/fi/2y9zhx5zjsdxg3zljc2f9/sound-of-silence.mp3.mp3?rlkey=88zg0td3loy40uxmcm9rnk1jt&st=qty8093e&raw=1" },
@@ -295,28 +332,145 @@
 
         loadTrack(0);
 
-        // AÇÃO AO CLICAR NO BOTÃO "FABY"
+        // --- LÓGICA DA CHUVA DE CORAÇÕES (SISTEMA DE PARTÍCULAS CANVAS) ---
+        const canvas = document.getElementById('heart-canvas');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const hearts = [];
+        const heartCount = 70; // Quantidade de corações
+
+        class Heart {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height; // Começa acima da tela
+                this.size = Math.random() * 10 + 5; // Tamanho entre 5 e 15
+                this.speedY = Math.random() * 2 + 1; // Velocidade de queda
+                this.speedX = Math.random() * 1 - 0.5; // Balanço lateral leve
+                // Opacidade variada para efeito de brilho/profundidade
+                this.opacity = Math.random() * 0.5 + 0.5; 
+                this.shadowBlur = Math.random() * 15 + 5; // Brilho
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+
+                // Se sair por baixo, reseta para cima
+                if (this.y > canvas.height) {
+                    this.reset();
+                    this.y = -this.size;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--heart-color').trim();
+                
+                // Efeito de Brilho (Neon amarelado)
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.shadowBlur = this.shadowBlur;
+
+                // Desenhar formato de coração
+                ctx.beginPath();
+                const topCurveHeight = this.size * 0.3;
+                ctx.moveTo(this.x, this.y + topCurveHeight);
+                // Curva superior esquerda
+                ctx.bezierCurveTo(
+                    this.x, this.y, 
+                    this.x - this.size / 2, this.y, 
+                    this.x - this.size / 2, this.y + topCurveHeight
+                );
+                // Curva inferior esquerda até a ponta
+                ctx.bezierCurveTo(
+                    this.x - this.size / 2, this.y + (this.size + topCurveHeight) / 2, 
+                    this.x, this.y + (this.size + topCurveHeight) / 2, 
+                    this.x, this.y + this.size
+                );
+                // Curva inferior direita da ponta
+                ctx.bezierCurveTo(
+                    this.x, this.y + (this.size + topCurveHeight) / 2, 
+                    this.x + this.size / 2, this.y + (this.size + topCurveHeight) / 2, 
+                    this.x + this.size / 2, this.y + topCurveHeight
+                );
+                // Curva superior direita
+                ctx.bezierCurveTo(
+                    this.x + this.size / 2, this.y, 
+                    this.x, this.y, 
+                    this.x, this.y + topCurveHeight
+                );
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initHearts() {
+            for (let i = 0; i < heartCount; i++) {
+                hearts.push(new Heart());
+            }
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(heart => {
+                heart.update();
+                heart.draw();
+            });
+            animationFrameId = requestAnimationFrame(animateHearts);
+        }
+
+        // Inicia a chuva assim que a página carrega
+        initHearts();
+        animateHearts();
+
+
+        // --- AÇÃO AO CLICAR NO BOTÃO FLUTUANTE "FABY" (Modificada) ---
         const intro = document.getElementById('intro-screen');
         const mainContent = document.getElementById('main-content');
         const enterBtn = document.getElementById('enter-btn');
 
         enterBtn.addEventListener('click', () => {
+            // Para a animação do canvas para economizar recursos
+            cancelAnimationFrame(animationFrameId); 
+            
+            // Esconde a tela de entrada (preta com chuva)
             intro.style.opacity = '0';
-            mainContent.style.opacity = '1';
+            intro.style.visibility = 'hidden';
+            
+            // Mostra o perfil
+            mainContent.classList.add('visible');
+            
+            // Esconde o botão após o clique (opcional, mas recomendado já que o player tem seu próprio botão)
+            enterBtn.style.display = 'none';
+
             setTimeout(() => {
                 intro.style.display = 'none';
-                audio.play(); // Começa a música
+                // Inicia a música (Lógica mantida)
+                audio.play(); 
                 playIcon.classList.replace('ph-play', 'ph-pause');
             }, 800);
         });
 
-        // Loading Inicial
+        // Loading Inicial (Mantido)
         window.addEventListener('load', () => {
             const loader = document.getElementById('loading-screen');
             setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }, 800);
         });
 
-        // Navegação de Abas
+        // Navegação de Abas (Mantido)
         const links = document.querySelectorAll('.navbar a');
         const sections = document.querySelectorAll('.content-section');
 
@@ -331,12 +485,12 @@
             });
         });
 
-        // Player Toggle
+        // Player Toggle (Mantido)
         const player = document.getElementById('floating-music-player');
         const toggleBtn = document.getElementById('toggle-player-btn');
         toggleBtn.addEventListener('click', () => player.classList.toggle('hidden-player'));
 
-        // Play/Pause
+        // Play/Pause (Mantido)
         document.getElementById('play-pause-button').addEventListener('click', () => {
             if (audio.paused) {
                 audio.play();
@@ -347,7 +501,7 @@
             }
         });
 
-        // Próximo/Anterior
+        // Próximo/Anterior (Mantido)
         document.getElementById('next-song').addEventListener('click', () => {
             currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
             loadTrack(currentTrackIndex);
@@ -362,10 +516,10 @@
             playIcon.classList.replace('ph-play', 'ph-pause');
         });
 
-        // Volume
+        // Volume (Mantido)
         document.getElementById('volume-slider').addEventListener('input', (e) => audio.volume = e.target.value);
 
-        // Carrossel
+        // Carrossel (Mantido)
         const images = document.querySelectorAll('.carousel-track img');
         let currentImg = 0;
 
